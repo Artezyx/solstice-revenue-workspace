@@ -1,0 +1,42 @@
+name: Solstice browser QA
+on:
+  push:
+    paths:
+      - 'qa/**'
+      - 'apps/web/**'
+      - '.github/workflows/browser-qa.yml'
+  pull_request:
+    paths:
+      - 'qa/**'
+      - 'apps/web/**'
+      - '.github/workflows/browser-qa.yml'
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install app
+        working-directory: apps/web
+        run: npm install
+      - name: Install QA runner
+        working-directory: qa
+        run: npm install
+      - name: Install Chromium
+        working-directory: qa
+        run: npx playwright install --with-deps chromium
+      - name: Run browser suite
+        working-directory: qa
+        run: npm run test:e2e
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-qa-report
+          path: |
+            qa/playwright-report
+            qa/test-results
+          if-no-files-found: ignore

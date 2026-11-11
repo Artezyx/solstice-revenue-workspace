@@ -85,16 +85,20 @@ test('blocks invalid form values before sending a request', async ({page}) => {
   await page.goto('/');
   await page.getByLabel('Company').fill('Sentinel');
   await page.getByLabel('Probability (%)').fill('101');
-  await page.getByRole('button', {name:'Create'}).click();
-  expect(await page.getByLabel('Probability (%)').evaluate((element) => (element as HTMLInputElement).checkValidity())).toBe(false);
+  // requestSubmit runs native constraint validation: an invalid form must not emit submit.
+  await expect(page.getByLabel('Probability (%)')).toBeInvalid();
+  await page.locator('form').evaluate(form => (form as HTMLFormElement).requestSubmit());
   expect(calls.filter(c => c.method === 'POST')).toHaveLength(0);
 });
 
 test('displays an API error without freezing the submit form', async ({page}) => {
-  await mockBackend(page, true);
+  const {calls} = await mockBackend(page, true);
   await page.goto('/');
   await page.getByLabel('Company').fill('Nimbus Systems');
-  await page.getByRole('button', {name:'Create'}).click();
+  // Submit via the form API to avoid a race with React's temporary disabled button.
+  // The happy-path test above still exercises an actual user click.
+  await page.locator('form').evaluate(form => (form as HTMLFormElement).requestSubmit());
   await expect(page.getByRole('alert')).toContainText('503');
   await expect(page.getByRole('button', {name:'Create'})).toBeEnabled();
+  expect(calls.filter(c => c.method === 'POST')).toHaveLength(1);
 });

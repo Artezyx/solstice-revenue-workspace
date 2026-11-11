@@ -14,7 +14,7 @@ services:
     build: ./apps/api
     environment:
       DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
-      DEMO_API_KEY: ${DEMO_API_KEY:?Set DEMO_API_KEY}
+      SOLSTICE_JWT_SECRET: ${SOLSTICE_JWT_SECRET:?Set SOLSTICE_JWT_SECRET}\n      SOLSTICE_JWT_ISSUER: ${SOLSTICE_JWT_ISSUER:-solstice-local}\n      SOLSTICE_JWT_AUDIENCE: ${SOLSTICE_JWT_AUDIENCE:-solstice-api}
       PORT: 8093
     ports: ["8093:8093"]
     depends_on:

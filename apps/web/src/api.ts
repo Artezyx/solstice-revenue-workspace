@@ -1,9 +1,12 @@
 import type { Metrics, Opportunity, Page, Stage } from './types';
 const BASE=import.meta.env.VITE_API_URL || 'http://localhost:8093';
-// For local portfolio demonstration only. Do not expose real credentials in client bundles.
-const KEY=import.meta.env.VITE_DEMO_API_KEY || 'local-development-key';
+let token = ''; // Ephemeral memory only; never compile secrets or store in localStorage.
+export function setAccessToken(value:string){token=value.trim();}
+export function clearAccessToken(){token='';}
 async function request<T>(path:string, options:RequestInit={}):Promise<T> {
- const response=await fetch(`${BASE}${path}`,{...options,headers:{'Content-Type':'application/json','X-API-Key':KEY,...options.headers}});
+ if(!token) throw new Error('Sign in with a short-lived access token first.');
+ const response=await fetch(`${BASE}${path}`,{...options,
+   headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`,...options.headers}});
  if(!response.ok) throw new Error(`API ${response.status}: ${await response.text()}`);
  return response.json() as Promise<T>;
 }

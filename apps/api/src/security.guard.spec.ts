@@ -11,7 +11,7 @@ afterAll(() => { if(originalSecret === undefined) delete process.env.SOLSTICE_JW
 async function token(scope: string, expired = false) {
   return new SignJWT({ scope }).setProtectedHeader({alg:'HS256'})
     .setSubject('security-test').setIssuer('solstice-local').setAudience('solstice-api')
-    .setIssuedAt().setExpirationTime(expired ? '1ms' : '5m')
+    .setIssuedAt().setExpirationTime(expired ? Math.floor(Date.now() / 1000) - 120 : '5m')
     .sign(createSecretKey(Buffer.from(secret)));
 }
 function context(method: string, authorization?: string) {

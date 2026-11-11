@@ -66,6 +66,8 @@ async function mockBackend(page: Page, rejectCreate = false) {
 test('creates a deal, computes forecast and advances the stage', async ({page}) => {
   const { calls } = await mockBackend(page);
   await page.goto('/');
+  await page.getByLabel('Temporary access token').fill('local-fixture-token');
+  await page.getByRole('button', {name:'Connect'}).click();
   await expect(page.getByRole('heading', { name: 'Revenue Workspace' })).toBeVisible();
   await page.getByLabel('Company').fill('Northstar Cloud');
   await page.getByLabel('Value (USD)').fill('12500');

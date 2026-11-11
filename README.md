@@ -51,3 +51,6 @@ cd ../web && npm install && npm test && npm run build
 
 ## Deployment constraints
 The default API key is a **local demonstration fixture** only. Do not deploy it publicly. Replace with OIDC + tenant authorization, use proper secret management and CORS configuration, create TypeORM migrations and disable `synchronize` for persistent environments. CI tests are domain tests, not a claim of an end-to-end deployed system.
+
+## Hardened authentication and performance checks
+Bearer JWT signature, issuer, audience, expiry and read/write scopes now protect the API. The React client accepts an ephemeral token in memory; demo API keys are no longer embedded. Configure `SOLSTICE_JWT_SECRET` before starting the service. See [SECURITY_AND_LOAD.md](docs/SECURITY_AND_LOAD.md). Previous API-key examples above must be adapted to use `Authorization: Bearer <token>`.

@@ -86,7 +86,7 @@ test('blocks invalid form values before sending a request', async ({page}) => {
   await page.getByLabel('Company').fill('Sentinel');
   await page.getByLabel('Probability (%)').fill('101');
   await page.getByRole('button', {name:'Create'}).click();
-  await expect(page.getByLabel('Probability (%)')).not.toBeValid();
+  expect(await page.getByLabel('Probability (%)').evaluate((element) => (element as HTMLInputElement).checkValidity())).toBe(false);
   expect(calls.filter(c => c.method === 'POST')).toHaveLength(0);
 });
 

@@ -86,7 +86,7 @@ test('blocks invalid form values before sending a request', async ({page}) => {
   await page.getByLabel('Company').fill('Sentinel');
   await page.getByLabel('Probability (%)').fill('101');
   // requestSubmit runs native constraint validation: an invalid form must not emit submit.
-  await expect(page.getByLabel('Probability (%)')).toBeInvalid();
+  expect(await page.getByLabel('Probability (%)').evaluate(el => (el as HTMLInputElement).checkValidity())).toBe(false);
   await page.locator('form').evaluate(form => (form as HTMLFormElement).requestSubmit());
   expect(calls.filter(c => c.method === 'POST')).toHaveLength(0);
 });
